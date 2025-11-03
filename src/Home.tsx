@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -33,10 +33,6 @@ const Home: React.FC = () => {
         </button>
       </div></div>
 
-      {/* Footer */}
-      <footer className="mt-16 text-gray-400 text-xs">
-        © {new Date().getFullYear()} FinAI. All rights reserved.
-      </footer>
     </div>
   );
 };

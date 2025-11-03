@@ -85,7 +85,7 @@ const FuturePlan: React.FC = () => {
               <ul className="list-disc list-inside text-gray-600">
                 {Object.entries(breakdown).map(([key, value]) => (
                   <li key={key}>
-                    {key}: ₹{value || 0}
+                    {key}: ₹{String(value)}
                   </li>
                 ))}
               </ul>
@@ -109,7 +109,7 @@ const FuturePlan: React.FC = () => {
                       outerRadius={100}
                       label
                     >
-                      {investmentOptions.map((entry, index) => (
+                      {investmentOptions.map((_, index) => (
                         <Cell key={index} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>

@@ -14,11 +14,11 @@ const Dashboard2: React.FC = () => {
   const [aiExpenseData, setAiExpenseData] = useState("");
   const [selectedMode, setSelectedMode] = useState<"manual" | "ai" | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
+
    const navigate = useNavigate();
 
 
- 
+ selectedFile
 const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (!file) return;
@@ -184,7 +184,7 @@ const handleFuturePlan = () => {
                        />
   <Button
     className="mt-3 bg-purple-600 hover:bg-purple-700 text-white"
-    onClick={handleAIExpense}
+    //onClick={handleAIExpense}
   >
     Analyze with AI
   </Button>
