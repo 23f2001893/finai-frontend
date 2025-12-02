@@ -11,9 +11,9 @@ const App: React.FC = () => {
   return (
     <div>
       <nav>
-        <Link to="/">Home</Link> |{" "}
-        <Link to="/Register">Register</Link> |{" "}
-        <Link to="/Login">Login</Link>
+        <button><Link to="/">Home</Link></button> |{" "}
+        <button><Link to="/Register">Register</Link></button> |{" "}
+        <button><Link to="/Login">Login</Link></button>
       </nav>
       <hr />
 
