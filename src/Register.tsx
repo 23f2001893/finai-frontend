@@ -124,7 +124,7 @@ const Register: React.FC = () => {
 
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{" "}
-          <button onClick={()=>navigate("/Login")}>
+          <button onClick={()=>navigate("/login")}>
             Login here
           </button>
         </p>

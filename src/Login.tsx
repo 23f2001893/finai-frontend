@@ -88,7 +88,7 @@ const Login: React.FC = () => {
         <p className="text-center text-gray-500 mt-6">
           Don't have an account?{" "}
           <button
-           onClick={()=>navigate("/Register")}>
+           onClick={()=>navigate("/register")}>
             Register here
           </button>
         </p>
