@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -11,6 +12,7 @@ const Register: React.FC = () => {
     phone:""
 
   });
+  const navigate=useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -115,17 +117,16 @@ const Register: React.FC = () => {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition-all duration-200"
-          >
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold transition-all duration-200">
             Register
           </button>
         </form>
 
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{" "}
-          <a href="/login" className="text-indigo-600 font-semibold hover:underline">
+          <button onClick={()=>navigate("/Login")}>
             Login here
-          </a>
+          </button>
         </p>
       </div>
     </div>
