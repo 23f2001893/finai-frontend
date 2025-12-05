@@ -54,7 +54,7 @@ export default function Managefinace() {
   const handleAddExpense = async (category: string, amount: number) => {
     if (! selectedDate) return;
     try{
-        const res=await fetch('https://finai-backend-gw4d.onrender.com/api/add-daily-expenses', {
+        const res=await fetch('https://finai-backend-gw4d.onrender.com/api/add-daily-expense', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
