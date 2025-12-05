@@ -58,12 +58,11 @@ const Dashboard: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-2xl p-8">
         <h1 className="text-4xl font-bold text-indigo-600 mb-6">
-          Welcome, {data?.username}!
+          Hello, {data?.username}! <h2 className="text-4xl font-serif text-pretty text-blue-300"> How can I help you today? 🤖</h2>
         </h1>
-        <div className="flex space-x-5">
+        
           <div >  <ChatBot /></div>
-          <div > <Dashboard2 /></div>
-           </div>
+          
 
         <div className="mt-8">
           

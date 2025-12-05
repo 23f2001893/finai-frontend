@@ -6,15 +6,12 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 import ExpenseTracker from "./ExpenseTracker";
 import FuturePlan from "./FuturePlan";
+import Yogi from "./Yogi";
+import Managefinace from "./Managefinace";
 
 const App: React.FC = () => {
   return (
     <div>
-      <nav>
-        <button><Link to="/">Home</Link></button> |{" "}
-        <button><Link to="/Register">Register</Link></button> |{" "}
-        <button><Link to="/Login">Login</Link></button>
-      </nav>
       <hr />
 
       <Routes>
@@ -22,6 +19,8 @@ const App: React.FC = () => {
         <Route path="/Register" element={<Register />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/manage-finances" element={<Managefinace />} />
+        <Route path ="/yogi" element={<Yogi />} />
         
         <Route path="/expense-tracker" element={<ExpenseTracker />} />
          <Route path="/future-plan" element={<FuturePlan />} />

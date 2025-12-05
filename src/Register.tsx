@@ -124,7 +124,9 @@ const Register: React.FC = () => {
 
         <p className="text-center text-gray-500 mt-6">
           Already have an account?{" "}
-          <button onClick={()=>navigate("/login")}>
+          <button 
+            className=" bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200"
+          onClick={()=>navigate("/login")}>
             Login here
           </button>
         </p>

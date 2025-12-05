@@ -29,7 +29,8 @@ const Login: React.FC = () => {
 
       if (res.ok) {
         sessionStorage.setItem("token", data.access_token);
-        navigate("/dashboard"); 
+        sessionStorage.setItem("username", formData.username);
+        navigate("/yogi"); 
         // Navigate to home page after login
       } else {
         alert(data.message || "Invalid credentials");
@@ -87,7 +88,8 @@ const Login: React.FC = () => {
 
         <p className="text-center text-gray-500 mt-6">
           Don't have an account?{" "}
-          <button
+          <button 
+           className=" bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200"
            onClick={()=>navigate("/register")}>
             Register here
           </button>
