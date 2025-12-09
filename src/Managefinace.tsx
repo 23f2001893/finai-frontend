@@ -71,7 +71,7 @@ export default function Managefinace() {
   };
   const onSubmit=async (monthlyData: { income: number; rent: number; emi: number; subscriptions: number; otherExpenses: number; })=>{
     try{
-        const res=await fetch('https://finai-backend-gw4d.onrender.com/api/add-monthly-expenses', {
+        const res=await fetch('https://finai-backend-gw4d.onrender.com/api/add-monthly-expense', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
