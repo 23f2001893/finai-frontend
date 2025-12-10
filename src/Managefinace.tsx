@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { MonthsView } from './Expenses/MonthsView';
 import { DatesView } from './Expenses/DatesView';
 import { ExpenseEntry } from './Expenses/ExpenseEntry';
@@ -30,6 +30,30 @@ export default function Managefinace() {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const currentYear = new Date().getFullYear();
   const username = sessionStorage.getItem("username") || "defaultUser";
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const params = new URLSearchParams({ 
+          date: selectedDate || '',
+          username,
+         });
+        const res = await fetch(`https://finai-backend-gw4d.onrender.com/api/get-expenses?${params.toString()}`);
+        if (!res.ok) {
+          throw new Error('Failed to fetch expenses');
+          return;
+        }
+        const data: Expense[] = await res.json();
+        setExpenses(data);
+      }
+      catch (err) {
+        console.error("Error fetching expenses:", err);
+      }
+    };
+    fetchExpenses();
+  },
+  [selectedDate, username]);
+
 
   const handleMonthClick = (monthIndex: number) => {
     setSelectedMonth(monthIndex);

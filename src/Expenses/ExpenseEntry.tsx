@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,} from 'react';
 import { ChevronLeft, Plus, Trash2, DollarSign } from 'lucide-react';
 import type { Expense } from '../Managefinace.tsx';
 import { Input } from '../components/ui/input';
@@ -37,6 +37,7 @@ export function ExpenseEntry({ date, expenses, onAddExpense, onDeleteExpense, on
       day: 'numeric' 
     });
   };
+
 
   const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
 
