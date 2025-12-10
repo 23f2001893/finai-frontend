@@ -100,7 +100,7 @@ export function ExpenseEntry({ date, expenses, onAddExpense, onDeleteExpense, on
             <h2 className="text-gray-900">Expenses</h2>
             <div className="flex items-center gap-2 text-indigo-600">
               <DollarSign className="w-5 h-5" />
-              <span className="text-indigo-900">Total: ${total.toFixed(2)}</span>
+              <span className="text-indigo-900">Total: {total.toFixed(2)}</span>
             </div>
           </div>
 
@@ -110,7 +110,7 @@ export function ExpenseEntry({ date, expenses, onAddExpense, onDeleteExpense, on
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="text-gray-900">{expense.category}</div>
-                    <div className="text-gray-600">${expense.amount.toFixed(2)}</div>
+                    <div className="text-gray-600">{expense.amount.toFixed(2)}</div>
                   </div>
                   <Button
                     variant="ghost"

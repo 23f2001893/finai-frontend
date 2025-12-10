@@ -38,10 +38,13 @@ export default function Managefinace() {
           date: selectedDate || '',
           username,
          });
-        const res = await fetch(`https://finai-backend-gw4d.onrender.com/api/get-daily-expenses?${params.toString()}`);
+        const res = await fetch(`https://finai-backend-gw4d.onrender.com/api/get-daily-expenses?${params.toString()}`,{
+        headers: {
+            'Content-Type': 'application/json',
+        }});
+
         if (!res.ok) {
           throw new Error('Failed to fetch expenses');
-          return;
         }
         const data: Expense[] = await res.json();
         setExpenses(data);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   LineChart,
@@ -19,22 +19,138 @@ import { Card, CardHeader, CardTitle, CardContent } from "./components/ui/card";
 
 const COLORS = ["#34d399", "#60a5fa", "#fbbf24", "#f87171"];
 
+const MONTH_NAMES = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
+
+interface LocationState {
+  username?: string;
+  month?: number; // 0-11 (0 = January)
+  year?: number;
+  // optional fallback values
+  income?: number;
+  expenses?: number;
+  breakdown?: Record<string, number>;
+}
+
+// Make this flexible enough to work whether backend sends `expenses` or `total_expenses`
+interface SummaryResponse {
+  username: string;
+  year: number | string;
+  month_index?: number; // if backend uses month_index (0-11)
+  month?: number;       // if backend sends month directly
+  income: number;
+  expenses?: number;
+  total_expenses?: number;
+  savings?: number;
+  breakdown: Record<string, number>;
+}
+
 const FuturePlan: React.FC = () => {
   const navigate = useNavigate();
-  const { state } = useLocation() as any;
+  const { state } = useLocation() as { state: LocationState | null };
 
-  const income = state?.income || 0;
-  const expenses = state?.expenses || 0;
-  const breakdown = state?.breakdown || {};
+  const username = state?.username || "Ruskin"; // TODO: replace with actual logged-in user
+
+  const current = new Date();
+  // 🔹 Use 0-based month index (0 = January)
+  const fallbackMonthIndex = state?.month ?? current.getMonth();
+  const fallbackYear = state?.year ?? current.getFullYear();
+
+  const [summary, setSummary] = useState<SummaryResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const displayMonthName = MONTH_NAMES[fallbackMonthIndex] || "Unknown";
+
+  // 🔹 Fetch real analytics from backend when component mounts
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchSummary() {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const params = new URLSearchParams({
+          username,
+          // monthIndex 0–11 → your backend expects `month` as 0-based for MonthlyExpense
+          month: String(fallbackMonthIndex),
+          year: String(fallbackYear),
+        });
+
+        const res = await fetch(
+          `https://finai-backend-gw4d.onrender.com/api/monthly-summary?${params.toString()}`,
+          {
+            method: "GET",
+            signal: controller.signal,
+          }
+        );
+
+        if (!res.ok) {
+          const text = await res.text();
+          console.error("Failed to fetch summary:", res.status, text);
+          throw new Error("Failed to fetch summary");
+        }
+
+        const data: SummaryResponse = await res.json();
+        setSummary(data);
+      } catch (err: any) {
+        if (err.name === "AbortError") return;
+        console.error("Error fetching summary:", err);
+        setError("Unable to load your analytics. Please try again later.");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchSummary();
+
+    return () => controller.abort();
+  }, [username, fallbackMonthIndex, fallbackYear]);
+
+  // 🔹 Fallback to state data only if API fails and you still have some data
+  const income =
+    Number(summary?.income ?? state?.income ?? 0);
+
+  const expenses =
+    Number(
+      summary?.total_expenses ??
+      summary?.expenses ??
+      state?.expenses ??
+      0
+    );
+
+  const breakdown: Record<string, number> =
+    summary?.breakdown ??
+    state?.breakdown ??
+    {};
 
   const savings = income - expenses;
 
-  const investmentOptions = [
-    { name: "Mutual Funds", value: savings * 0.4 },
-    { name: "Fixed Deposit", value: savings * 0.3 },
-    { name: "Stock Market", value: savings * 0.2 },
-    { name: "Emergency Fund", value: savings * 0.1 },
-  ];
+  const investmentOptions =
+    savings > 0
+      ? [
+          { name: "Mutual Funds", value: savings * 0.4 },
+          { name: "Fixed Deposit", value: savings * 0.3 },
+          { name: "Stock Market", value: savings * 0.2 },
+          { name: "Emergency Fund", value: savings * 0.1 },
+        ]
+      : [
+          { name: "Emergency Fund", value: Math.abs(savings) * 0.5 },
+          { name: "Debt Repayment", value: Math.abs(savings) * 0.5 },
+        ];
 
   const lineData = [
     { month: "Jan", value: savings * 0.8 },
@@ -58,22 +174,37 @@ const FuturePlan: React.FC = () => {
             <CardTitle className="text-2xl font-semibold text-center text-indigo-700">
               💡 Future Investment Plan
             </CardTitle>
+            <p className="text-center text-sm text-gray-500">
+              {username} • {displayMonthName} {fallbackYear}
+            </p>
           </CardHeader>
 
           <CardContent>
+            {/* Loading / error states */}
+            {loading && (
+              <div className="mb-6 text-center text-gray-500">
+                Fetching your financial analytics...
+              </div>
+            )}
+            {error && (
+              <div className="mb-6 text-center text-red-500">
+                {error}
+              </div>
+            )}
+
             {/* Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
               <div className="bg-indigo-100 p-4 rounded-xl">
                 <h4 className="font-medium text-indigo-700">Total Income</h4>
-                <p className="text-xl font-semibold">₹{income}</p>
+                <p className="text-xl font-semibold">₹{income.toFixed(2)}</p>
               </div>
               <div className="bg-red-100 p-4 rounded-xl">
                 <h4 className="font-medium text-red-700">Total Expenses</h4>
-                <p className="text-xl font-semibold">₹{expenses}</p>
+                <p className="text-xl font-semibold">₹{expenses.toFixed(2)}</p>
               </div>
               <div className="bg-green-100 p-4 rounded-xl">
                 <h4 className="font-medium text-green-700">Savings</h4>
-                <p className="text-xl font-semibold">₹{savings}</p>
+                <p className="text-xl font-semibold">₹{savings.toFixed(2)}</p>
               </div>
             </div>
 
@@ -82,13 +213,19 @@ const FuturePlan: React.FC = () => {
               <h3 className="text-lg font-semibold text-gray-700 mb-2">
                 Expense Breakdown
               </h3>
-              <ul className="list-disc list-inside text-gray-600">
-                {Object.entries(breakdown).map(([key, value]) => (
-                  <li key={key}>
-                    {key}: ₹{String(value)}
-                  </li>
-                ))}
-              </ul>
+              {Object.keys(breakdown).length === 0 ? (
+                <p className="text-gray-500 text-sm">
+                  No expense data available for this period.
+                </p>
+              ) : (
+                <ul className="list-disc list-inside text-gray-600">
+                  {Object.entries(breakdown).map(([key, value]) => (
+                    <li key={key}>
+                      {key}: ₹{Number(value).toFixed(2)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
 
             {/* Charts */}
@@ -110,7 +247,10 @@ const FuturePlan: React.FC = () => {
                       label
                     >
                       {investmentOptions.map((_, index) => (
-                        <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={index}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -131,7 +271,12 @@ const FuturePlan: React.FC = () => {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line type="monotone" dataKey="value" stroke="#4f46e5" strokeWidth={2} />
+                    <Line
+                      type="monotone"
+                      dataKey="value"
+                      stroke="#4f46e5"
+                      strokeWidth={2}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
@@ -139,12 +284,21 @@ const FuturePlan: React.FC = () => {
 
             {/* Suggestions */}
             <div className="mt-8 bg-gray-50 p-6 rounded-xl shadow-sm">
-              <h3 className="text-xl font-semibold text-gray-700 mb-3">Suggestions</h3>
+              <h3 className="text-xl font-semibold text-gray-700 mb-3">
+                Suggestions
+              </h3>
               <ul className="list-disc list-inside text-gray-600 space-y-2">
-                <li>Invest 40% in mutual funds for compounding growth.</li>
-                <li>Keep 10% as emergency fund for flexibility.</li>
-                <li>Track monthly savings and rebalance quarterly.</li>
-                <li>Avoid overspending beyond 60% of income.</li>
+                {savings <= 0 && (
+                  <li>
+                    Your expenses are equal to or higher than your income.
+                    Focus on reducing non-essential categories first.
+                  </li>
+                )}
+                <li>Try to keep fixed expenses within 50–60% of income.</li>
+                <li>Invest a portion of your monthly savings regularly.</li>
+                <li>
+                  Maintain at least 3–6 months of expenses as an emergency fund.
+                </li>
               </ul>
             </div>
 
